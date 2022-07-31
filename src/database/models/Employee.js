@@ -74,6 +74,10 @@ const EmployeeSchema = new Schema({
         type:String,
         default:"N/A"
     },
+    department:{
+        type:String,
+        default:"N/A"
+    },
     password:{
         type:String,
         required:true

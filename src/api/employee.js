@@ -125,6 +125,7 @@ module.exports = (app,channel) => {
       const status = data.status;
       const imageUrl = data.imageUrl;
       const dateOfJoining = data.dateOfJoining;
+      const department = data.department;
 
       // req.user = userId;
       // console.log(data);
@@ -148,6 +149,7 @@ module.exports = (app,channel) => {
         imageUrl,
         dateOfJoining,
         message: "success",
+        department,
         // token,
       });
       // return res.json(data);
@@ -431,7 +433,7 @@ module.exports = (app,channel) => {
         try {
           // const {name,role} = req.body;
           const Id = req.params.id;
-          const imageUrl = req.files.photo;
+          // const imageUrl = req.files.photo;
           const newUserData = {
             name: req.body.name,
             email: req.body.email,
@@ -448,8 +450,9 @@ module.exports = (app,channel) => {
             password:req.body.password,
             role:req.body.role,
             status:req.body.status,
-            status:req.body.status,
-            photo:imageUrl
+            dateOfJoining:req.body.dateOfJoining,
+            department:req.body.department,
+            // photo:imageUrl
           };
           const { data } = await service.UpdateUserDetail(Id, newUserData);
   

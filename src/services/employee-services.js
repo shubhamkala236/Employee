@@ -105,7 +105,7 @@ class EmployeeService {
   //Admin Update User/id:
   async UpdateUserDetail(Id, userData) {
     const {
-      photo,
+      // photo,
       password,
       name,
       email,
@@ -122,9 +122,10 @@ class EmployeeService {
       designation,
       status,
       dateOfJoining,
+      department
     } = userData;
-    const uploaded = await cloudinary.uploader.upload(photo.tempFilePath);
-    const newUrl = uploaded.url;
+    // const uploaded = await cloudinary.uploader.upload(photo.tempFilePath);
+    // const newUrl = uploaded.url;
     //create new salt by admin
     let salt = await GenerateSalt();
 
@@ -147,8 +148,9 @@ class EmployeeService {
       password: userPassword,
       salt: salt,
       status: status,
-      imageUrl: newUrl,
+      // imageUrl: newUrl,
       role: role,
+      department:department,
     };
 
     try {
@@ -218,6 +220,7 @@ class EmployeeService {
             imageUrl: existingUser.imageUrl,
             status: existingUser.status,
             dateOfJoining: existingUser.dateOfJoining,
+            department: existingUser.department,
           });
         }
       }
