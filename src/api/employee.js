@@ -183,7 +183,7 @@ module.exports = (app,channel) => {
     }
     const userId = user._id;
 
-    return res.json({ name,email,dateOfBirth,phoneNumber,current_address,perma_address,adhaarNumber,panNumber,bankAccountNumber,ifsc,passBookNumber,role,designation,status,imageUrl,dateOfJoining,department,userId });
+    return res.json({ name,email,dateOfBirth,phoneNumber,current_address,perma_address,adhaarNumber,panNumber,bankAccountNumber,ifsc,passBookNumber,role,designation,status,imageUrl,dateOfJoining,department,userId,message:"success" });
   });
 
   //Fortgot password
