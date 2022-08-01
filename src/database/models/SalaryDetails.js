@@ -37,6 +37,30 @@ const SalaryDetailsSchema = new Schema({
         type: Number,
         required: true,
     },
+    ESIC_Employer:{
+        type: Number,
+        required: true,
+    },
+    ESIC_Employee:{
+        type: Number,
+        required: true,
+    },
+    TDS:{
+        type: Number,
+        required: true,
+    },
+    MEDICAL:{
+        type: Number,
+        required: true,
+    },
+    PF_NUMBER:{
+        type: Number,
+        required: true,
+    },
+    ESIC_NUMBER:{
+        type: Number,
+        required: true,
+    },
 
 });
         

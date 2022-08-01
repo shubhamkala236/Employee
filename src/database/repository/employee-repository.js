@@ -272,10 +272,10 @@ async UserUpdateDetails(Id,newUserData){
     
     }
     //Add salary Structure of Employee--------Admin
-    async AddSalary({Basic,HRA,Convince,LTA,SPL,PF_Employee,PF_Employer,Id}){
+    async AddSalary({Basic,HRA,Convince,LTA,SPL,PF_Employee,PF_Employer,Id,ESIC_Employer,ESIC_Employee,TDS,MEDICAL,PF_NUMBER,ESIC_NUMBER}){
         try{
             const salary = new SalaryDetailsModel({
-                Basic,HRA,Convince,LTA,SPL,PF_Employee,PF_Employer,Employee_id:Id
+                Basic,HRA,Convince,LTA,SPL,PF_Employee,PF_Employer,Employee_id:Id,ESIC_Employer,ESIC_Employee,TDS,MEDICAL,PF_NUMBER,ESIC_NUMBER
             })
 
             const result = await salary.save();

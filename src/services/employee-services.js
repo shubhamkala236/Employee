@@ -200,6 +200,7 @@ class EmployeeService {
           const token = await GenerateSignature({
             email: existingUser.email,
             _id: existingUser._id,
+            role:existingUser.role
           });
           return FormateData({
             id: existingUser._id,
@@ -542,7 +543,7 @@ class EmployeeService {
     SPL,
     PF_Employee,
     PF_Employer,
-    Id,
+    Id,ESIC_Employer,ESIC_Employee,TDS,MEDICAL,PF_NUMBER,ESIC_NUMBER
   }) {
     try {
       const data = await this.repository.AddSalary({
@@ -553,7 +554,7 @@ class EmployeeService {
         SPL,
         PF_Employee,
         PF_Employer,
-        Id,
+        Id,ESIC_Employer,ESIC_Employee,TDS,MEDICAL,PF_NUMBER,ESIC_NUMBER
       });
       if (data) {
         return FormateData(data);

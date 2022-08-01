@@ -260,7 +260,7 @@ module.exports = (app,channel) => {
       const newPassword = req.body.newPassword;
 
       try {
-        const Id = req.user.id;
+        const Id = req.user._id;
         const { data } = await service.UpdateMyPassword(Id, newPassword);
         if (data) {
           return res.status(200).json("password updated successfully");
@@ -290,7 +290,7 @@ module.exports = (app,channel) => {
           ifsc: req.body.ifsc,
           passBookNumber: req.body.passBookNumber,
         };
-        const Id = req.user.id;
+        const Id = req.user._id;
         const { data } = await service.UpdateMyDetails(Id, newUserData);
         if (data) {
           return res.status(200).json("Details updated successfully");
@@ -308,7 +308,7 @@ module.exports = (app,channel) => {
     async (req, res, next) => {
       try {
         const pic = req.files.photo;
-        const Id = req.user.id;
+        const Id = req.user._id;
         // console.log(pic);
         const { data } = await service.UpdateMyPic(Id, pic);
         if (data) {
@@ -563,7 +563,7 @@ module.exports = (app,channel) => {
     async (req, res, next) => {
       try {
         const Id = req.params.id;
-        const { Basic, HRA, Convince, LTA, SPL, PF_Employee, PF_Employer } =
+        const { Basic, HRA, Convince, LTA, SPL, PF_Employee, PF_Employer,ESIC_Employer,ESIC_Employee,TDS,MEDICAL,PF_NUMBER,ESIC_NUMBER } =
           req.body;
         const { data } = await service.Salary({
           Basic,
@@ -573,7 +573,7 @@ module.exports = (app,channel) => {
           SPL,
           PF_Employee,
           PF_Employer,
-          Id,
+          Id,ESIC_Employer,ESIC_Employee,TDS,MEDICAL,PF_NUMBER,ESIC_NUMBER
         });
         if (data) {
           return res.json("Salary Added Successfully");
@@ -602,7 +602,7 @@ module.exports = (app,channel) => {
 //--------------------microservice------------------------
   
 
-  //Create payroll details of employee
+  //Create payroll details of employee ----admin
   app.post(
     "/create-payroll-employee/:id/:month/:year",
     isAuthenticatedUser,
@@ -615,7 +615,7 @@ module.exports = (app,channel) => {
       //get payload which we will send to our payroll service
         //get salary detail of a employee
         const salaryDetail = await service.GetSalaryByIdForAttendance(employeeId);
-        // console.log(salaryDetail);
+        console.log(salaryDetail);
         //send details to attendance service to create payroll
         if(!salaryDetail){
           return res.json({message:"No salary details of user"});
@@ -634,7 +634,39 @@ module.exports = (app,channel) => {
     }
   );
 
-  //Create Salary Slip details of employee
+    //Create payroll details of employee ----User
+    app.post(
+      "/create-payroll-me/:month/:year",
+      isAuthenticatedUser,
+      async (req, res, next) => {
+        try {
+        const employeeId = req.user._id;
+        const month = req.params.month;
+        const year = req.params.year;
+        //get payload which we will send to our payroll service
+          //get salary detail of a employee
+          const salaryDetail = await service.GetSalaryByIdForAttendance(employeeId);
+          // console.log(salaryDetail);
+          //send details to attendance service to create payroll
+          if(!salaryDetail){
+            return res.json({message:"No salary details of user"});
+          }
+          const {data} = await service.getPayloadPayroll(employeeId,salaryDetail,month,year,'createEmployeePayroll');
+          console.log(data);
+          //now publish the payload
+          // PublishMessage(data);  
+          PublishMessage(channel,Attendance_BINDING_KEY,JSON.stringify(data))
+        //  console.log(val);
+          return res.status(200).json(data);
+        } 
+        catch (err) {
+          next(err);
+        }
+      }
+    );
+
+    //---------------------------salary-slip final----------------------------///
+  //Create Salary Slip details of employee ----admin
   app.post(
     "/create-salarySlip-employee/:id/:month/:year",
     isAuthenticatedUser,
@@ -672,47 +704,45 @@ module.exports = (app,channel) => {
   }
   )
 
-  //Employee send userDetails to pdf module from here
-  // app.post(
-  //   "/generatePdf-userdetail/:id/:month/:year",
-  //   isAuthenticatedUser,
-  //   authorizeRoles("admin"),
-  //   async (req, res, next)=>{
 
-  //     //get payload we will send to our pdf service to generate pdf
-  //     try {
-  //     const employeeId = req.params.id;
-  //     const month = req.params.month;
-  //     const year = req.params.year;
-  //       //get userDetails
-  //     const userDetail = await service.UserDetailsForSalarySlip(employeeId);
-  //     if(!userDetail){
-  //       return res.json({message:"No User details for this id"});
-  //     }
+  //Create Salary Slip details of employee ----USer
+  app.post(
+    "/create-salarySlip-employee/me/:month/:year",
+    isAuthenticatedUser,
+    async (req, res, next)=>{
 
-  //     //salary details
-  //     const salaryDetail = await service.GetSalaryByIdForAttendance(employeeId);
-  //     if(!salaryDetail){
-  //       return res.json({message:"No salary details of user"});
-  //     }
-
-  //     //now generate payload with salary and user details
-  //     const {data} = await service.getPayloadPdfSlip(employeeId,salaryDetail,userDetail,month,year,'takeUserDetailsFromEmployee');
+      //get payload we will send to our attendance service to generate salary slip pdf
+      try {
+      const employeeId = req.user._id;
+      const month = req.params.month;
+      const year = req.params.year;
       
+      //user details
+      const userDetail = await service.UserDetailsForSalarySlip(employeeId);
+      if(!userDetail){
+        return res.json({message:"No User details for this id"});
+      }
+      //salary details
+      const salaryDetail = await service.GetSalaryByIdForAttendance(employeeId);
+      if(!salaryDetail){
+        return res.json({message:"No salary details of user"});
+      }
 
-    
+      //now generate payload with salary and user details
 
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // }
-  // )
+      const {data} = await service.getPayloadSalarySlip(employeeId,salaryDetail,userDetail,month,year,'createSalarySlipSchema'); //getpdf
 
+      // PublishAttendanceEvent(data);
+      PublishMessage(channel,Attendance_BINDING_KEY,JSON.stringify(data))
+      return res.status(200).json(data);
 
+    } catch (error) {
+      next(error);
+    }
+  }
+  )
 
-
-
-
+  
 
 
 
