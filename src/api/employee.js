@@ -176,14 +176,14 @@ module.exports = (app,channel) => {
   //CheckAuth
   app.get("/auth", isAuthenticatedUser, async (req, res, next) => {
     const user = req.user;
+    const {name,email,dateOfBirth,phoneNumber,current_address,perma_address,adhaarNumber,panNumber,bankAccountNumber,ifsc,passBookNumber,role,designation,status,imageUrl,dateOfJoining,department} = user;
     // console.log(user);
     if (!user) {
       return res.json("Please Login to access this resource");
     }
     const userId = user._id;
-    const { name, email } = user;
 
-    return res.json({ name, email, userId });
+    return res.json({ name,email,dateOfBirth,phoneNumber,current_address,perma_address,adhaarNumber,panNumber,bankAccountNumber,ifsc,passBookNumber,role,designation,status,imageUrl,dateOfJoining,department,userId });
   });
 
   //Fortgot password
